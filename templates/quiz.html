@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Quiz</title>
+</head>
+<body>
+    <h1>Quiz: {{ request.args.get('tag', 'Programming') }}</h1>
+    <form id="quizForm">
+        {% for question in questions %}
+        <div class="question">
+            <p>{{ question.title }}</p>
+            <textarea name="answer" placeholder="Write your answer..."></textarea>
+        </div>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById("quizForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            let answers = [];
+            document.querySelectorAll("textarea").forEach((textarea, idx) => {
+                answers.push(textarea.value.trim());
+            });
+
+            fetch("/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ answers: answers })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`You scored ${data.score} out of ${data.total}`);
+                window.location.href = "{{ url_for('dashboard') }}";  // Redirect to dashboard
+            });
+        });
+    </script>
+</body>
+</html>

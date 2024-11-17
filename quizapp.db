@@ -1,0 +1,6 @@
+from app import app
+from models import db
+
+# Recreate the database and tables
+with app.app_context():
+    db.create_all()
